@@ -22,9 +22,18 @@ namespace IllustrationGenerator
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        Painter painter;
+
         public MainPage()
         {
             this.InitializeComponent();
+            painter = new Painter(Illustration1);
+        }
+
+        private void Draw_Click(object sender, RoutedEventArgs e)
+        {
+            painter.GenerateAnchors(15);
+            painter.ConnectAnchors(30);
         }
     }
 }

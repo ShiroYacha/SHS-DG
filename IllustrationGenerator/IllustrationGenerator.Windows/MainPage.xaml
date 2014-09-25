@@ -8,6 +8,13 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <Canvas Name="Illustration1" Grid.Row="0" Margin="50" Width="800" Height="500">
+        </Canvas>
     </Grid>
+    
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="Draw" Icon="Edit" Click="Draw_Click"></AppBarButton>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
