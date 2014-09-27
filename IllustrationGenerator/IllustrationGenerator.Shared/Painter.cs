@@ -54,7 +54,7 @@ namespace IllustrationGenerator
             strokeBrush.Opacity = 0.4;
             ellipse.Fill = fillBrush;
             ellipse.Stroke = strokeBrush;
-            ellipse.StrokeThickness = PaintParameters.ELLIPSE_STROKE_THICKNESS;
+            ellipse.StrokeThickness = PaintParameters.ELLIPSE_STROKE_THICKNESS_RATIO;
             canvas.Children.Add(ellipse);
             Canvas.SetLeft(ellipse, point.X);
             Canvas.SetTop(ellipse, point.Y);

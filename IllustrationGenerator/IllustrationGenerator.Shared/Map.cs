@@ -84,11 +84,12 @@ namespace IllustrationGenerator
             this.canvas = canvas;
             this.width = canvas.Width;
             this.height = canvas.Height;
+            this.diag = Math.Sqrt(Math.Pow(width, 2) + Math.Pow(height, 2));
             // Data generation
             GenerateCities(numCities);
             // Data computation
             ComputeDistance();
-            this.diag = Math.Sqrt(Math.Pow(width, 2) + Math.Pow(height, 2));
+
         }
 
         private void GenerateCities(int numCities)
@@ -101,7 +102,6 @@ namespace IllustrationGenerator
                 cities.Add(new City() { Position = position, Color = color});
                 AddEllipse(position, color, PaintParameters.CITY_ELLIPSE_CANVAS_RATIO * diag);
             }
-
         }
 
         private void ComputeDistance()
@@ -171,10 +171,10 @@ namespace IllustrationGenerator
             strokeBrush.Opacity = 0.4;
             ellipse.Fill = fillBrush;
             ellipse.Stroke = strokeBrush;
-            ellipse.StrokeThickness = PaintParameters.ELLIPSE_STROKE_THICKNESS;
+            ellipse.StrokeThickness = PaintParameters.ELLIPSE_STROKE_THICKNESS_RATIO * diag;
             canvas.Children.Add(ellipse);
-            Canvas.SetLeft(ellipse, position.X);
-            Canvas.SetTop(ellipse, position.Y);
+            Canvas.SetLeft(ellipse, position.X - diameter/2);
+            Canvas.SetTop(ellipse, position.Y - diameter / 2);
             return ellipse;
         }
 
@@ -193,7 +193,7 @@ namespace IllustrationGenerator
             pathGeometry.Figures.Add(pathFigure);
             Path path = new Path();
             path.Stroke = new SolidColorBrush(color);
-            path.StrokeThickness = rng.RandomInt(2, 1);
+            path.StrokeThickness = rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_MIN_RATIO * diag);
             path.Data = pathGeometry;
             canvas.Children.Add(path);
             return path;
@@ -209,8 +209,8 @@ namespace IllustrationGenerator
             pathFigure.Segments.Add(line);
             pathGeometry.Figures.Add(pathFigure);
             Path path = new Path();
+            path.StrokeThickness = rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_MIN_RATIO * diag);
             path.Stroke = new SolidColorBrush(color);
-            path.StrokeThickness = rng.RandomInt(2, 1);
             path.Data = pathGeometry;
             canvas.Children.Add(path);
             return path;

@@ -28,6 +28,7 @@ namespace IllustrationGenerator
         List<Ant> ants;
         DispatcherTimer mapTimer;
         DispatcherTimer antTimer;
+        DispatcherTimer nestTimer;
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName]string caller = null)
@@ -58,13 +59,16 @@ namespace IllustrationGenerator
         public MainPage()
         {
             this.InitializeComponent();
-            map = new Map(Illustration1, 15);
+            map = new Map(Illustration1, SimulationParameters.CITY_COUNT);
             mapTimer = new DispatcherTimer();
             mapTimer.Tick += mapTimer_Tick;
             mapTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             antTimer = new DispatcherTimer();
             antTimer.Tick += antTimer_Tick;
-            antTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            antTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            nestTimer = new DispatcherTimer();
+            nestTimer.Tick += nestTimer_Tick;
+            nestTimer.Interval = new TimeSpan(0, 0, 0, 5);
             ants = new List<Ant>();
             foreach (var city in map.Cities)
             {
@@ -79,6 +83,16 @@ namespace IllustrationGenerator
             RaisePropertyChanged("PathCount");
         }
 
+        void nestTimer_Tick(object sender, object e)
+        {
+            foreach (var city in map.Cities)
+            {
+                ants.Add(new Ant(city, map));
+            }
+            RaisePropertyChanged("PheromoneCount");
+            RaisePropertyChanged("PathCount");
+        }
+
         void antTimer_Tick(object sender, object e)
         {
             foreach (var ant in ants)
@@ -89,6 +103,7 @@ namespace IllustrationGenerator
 
         private void Draw_Click(object sender, RoutedEventArgs e)
         {
+            nestTimer.Start();
             antTimer.Start();
             mapTimer.Start();
         }
