@@ -5,11 +5,21 @@
     xmlns:local="using:IllustrationGenerator"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Canvas Name="Illustration1" Grid.Row="0" Margin="50" Width="800" Height="500">
-        </Canvas>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Canvas Name="Illustration1" Grid.Column="0" Margin="50" Width="800" Height="500"/>
+        <StackPanel Grid.Column="1" >
+            <TextBlock Width="100" Margin="10,50,10,50" Text="{Binding PheromoneCount}" FontSize="40" FontWeight="ExtraLight" Foreground="White"/>
+            <TextBlock Width="100" Margin="10,50,10,50" Text="{Binding PathCount}" FontSize="40" FontWeight="ExtraLight" Foreground="White"/>
+        </StackPanel>
+
+
     </Grid>
     
     <Page.BottomAppBar>

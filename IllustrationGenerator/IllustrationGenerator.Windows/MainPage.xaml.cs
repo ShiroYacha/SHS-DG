@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -20,20 +22,75 @@ namespace IllustrationGenerator
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
-        Painter painter;
+        Map map;
+        List<Ant> ants;
+        DispatcherTimer mapTimer;
+        DispatcherTimer antTimer;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName]string caller = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(caller));
+            }
+        }
+
+        public int PheromoneCount
+        {
+            get
+            {
+                return map.PheromeneCount;
+            }
+        }
+
+        public int PathCount
+        {
+            get
+            {
+                return map.PathCount;
+            }
+        }
 
         public MainPage()
         {
             this.InitializeComponent();
-            painter = new Painter(Illustration1);
+            map = new Map(Illustration1, 15);
+            mapTimer = new DispatcherTimer();
+            mapTimer.Tick += mapTimer_Tick;
+            mapTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            antTimer = new DispatcherTimer();
+            antTimer.Tick += antTimer_Tick;
+            antTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            ants = new List<Ant>();
+            foreach (var city in map.Cities)
+            {
+                ants.Add(new Ant(city, map));
+            }
+        }
+
+        void mapTimer_Tick(object sender, object e)
+        {
+            map.RefreshPheromones();
+            RaisePropertyChanged("PheromoneCount");
+            RaisePropertyChanged("PathCount");
+        }
+
+        void antTimer_Tick(object sender, object e)
+        {
+            foreach (var ant in ants)
+                ant.RandomMove();
+            RaisePropertyChanged("PheromoneCount");
+            RaisePropertyChanged("PathCount");
         }
 
         private void Draw_Click(object sender, RoutedEventArgs e)
         {
-            painter.GenerateAnchors(15);
-            painter.ConnectAnchors(30);
+            antTimer.Start();
+            mapTimer.Start();
         }
     }
 }

@@ -9,7 +9,8 @@ namespace IllustrationGenerator
 {
     public class RandomGenerator
     {
-        private Random rng = new Random();
+        private static int seed = 0;
+        private Random rng = new Random(seed++);
 
         public Point RandomPoint(double right, double bottom)
         {
@@ -18,7 +19,7 @@ namespace IllustrationGenerator
 
         public Color RandomColor()
         {
-            return Color.FromArgb((byte)rng.Next(255), (byte)rng.Next(255), (byte)rng.Next(255), (byte)rng.Next(255));
+            return Color.FromArgb(255, (byte)rng.Next(255), (byte)rng.Next(255), (byte)rng.Next(255));
         }
 
         public int RandomInt(int max, int min)

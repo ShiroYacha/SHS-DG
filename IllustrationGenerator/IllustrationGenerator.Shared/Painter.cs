@@ -45,7 +45,7 @@ namespace IllustrationGenerator
         private void DrawEllipseOnCanvas(Point point)
         {
             Ellipse ellipse = new Ellipse();
-            int diameter = ScaleCanvas(rng.RandomDouble(PaintParameters.ELLIPSE_CANVAS_MAX_RATIO, PaintParameters.ELLIPSE_CANVAS_MIN_RATIO));
+            int diameter = ScaleCanvas(rng.RandomDouble(PaintParameters.PHEOMONE_ELLIPSE_CANVAS_MAX_RATIO, PaintParameters.PHEOMONE_ELLIPSE_CANVAS_MIN_RATIO));
             ellipse.Width = diameter;
             ellipse.Height = diameter;
             var brushColor = rng.RandomColor();
