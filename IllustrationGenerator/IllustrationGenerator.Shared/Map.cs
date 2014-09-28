@@ -65,14 +65,6 @@ namespace IllustrationGenerator
                 return pheromones.Keys.Count;
             }
         }
-
-        public int PathCount
-        {
-            get
-            {
-                return paths.Keys.Count; 
-            }
-        }
         #endregion
 
         public Map(Canvas canvas, int numCities)
@@ -87,6 +79,7 @@ namespace IllustrationGenerator
             this.diag = Math.Sqrt(Math.Pow(width, 2) + Math.Pow(height, 2));
             // Data generation
             GenerateCities(numCities);
+            GenerateFood();
             // Data computation
             ComputeDistance();
 
@@ -102,6 +95,11 @@ namespace IllustrationGenerator
                 cities.Add(new City() { Position = position, Color = color});
                 AddEllipse(position, color, PaintParameters.CITY_ELLIPSE_CANVAS_RATIO * diag);
             }
+        }
+
+        private void GenerateFood()
+        {
+            AddEllipse(new Point(canvas.Width/2,canvas.Height/2), Colors.White, PaintParameters.CITY_ELLIPSE_CANVAS_RATIO * diag);
         }
 
         private void ComputeDistance()
@@ -142,6 +140,13 @@ namespace IllustrationGenerator
             }
         }
 
+        public bool CheckBoundary(Point testPosition)
+        {
+            var testX = testPosition.X - canvas.Width / 2.0;
+            var testY = testPosition.Y - canvas.Height / 2.0;
+            return Math.Pow(testX, 2) + Math.Pow(testY, 2) <= Math.Pow(diag, 2); 
+        }
+
         private int ScaleCanvas(double ratio)
         {
             double length = Math.Min(canvas.Width, canvas.Height);
@@ -155,9 +160,46 @@ namespace IllustrationGenerator
             pheromones.Add(pheromone, ellipse);
         }    
 
+        public Point GetReturnCityDirection(Point position, City city)
+        {
+            var step = diag * SimulationParameters.ANT_STEP_SIZE_RATIO;
+            var deltaX = city.Position.X - position.X;
+            var deltaY = city.Position.Y - position.Y;
+            var deltaDiag = Math.Sqrt(Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2));
+            return new Point(position.X + deltaX * step / deltaDiag, position.Y + deltaY * step / deltaDiag);
+        }
+
+        public Point GetNearbyPheromoneDirection(Point position)
+        {
+            var step = diag * SimulationParameters.ANT_STEP_SIZE_RATIO;
+            foreach(var pheromone in pheromones.Keys)
+            {
+                var ellipse = pheromones[pheromone];
+                double x = Canvas.GetLeft(ellipse);
+                double y = Canvas.GetTop(ellipse);
+                if ((Math.Pow(x - position.X, 2) + Math.Pow(y - position.Y, 2)) <= step)
+                    return new Point(x, y);
+            }
+            var deltaX = rng.RandomDouble(step, -step);
+            var deltaY = rng.RandomDouble(step, -step);
+            position.X += deltaX;
+            position.Y += deltaY;
+            return position;
+        }
+
+        public bool CheckIsNearFood(Point position)
+        {
+            var step = diag * SimulationParameters.ANT_STEP_SIZE_RATIO;
+            double x = canvas.Width/2;
+            double y = canvas.Height/2;
+            return Math.Sqrt(Math.Pow(x - position.X, 2) + Math.Pow(y - position.Y, 2)) <= step;
+        }
+
         public void ConnectPheromoneOnMap(Pheromone toPheromone,Point from, Point to)
         {
-            var path = CreateSegment(from, to, toPheromone.Color);
+            var path = CreateSegment(from, to, toPheromone.Color, toPheromone.IsFood ? 
+                rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_FOOD_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_FOOD_MIN_RATIO * diag) 
+                : rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_MIN_RATIO * diag));
             paths.Add(toPheromone, path);
         }
 
@@ -178,7 +220,7 @@ namespace IllustrationGenerator
             return ellipse;
         }
 
-        private Path CreateArcSegment(Point start, Point end, Color color)
+        private Path CreateArcSegment(Point start, Point end, Color color, double thickness)
         {
             PathGeometry pathGeometry = new PathGeometry();
             PathFigure pathFigure = new PathFigure();
@@ -193,13 +235,13 @@ namespace IllustrationGenerator
             pathGeometry.Figures.Add(pathFigure);
             Path path = new Path();
             path.Stroke = new SolidColorBrush(color);
-            path.StrokeThickness = rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_MIN_RATIO * diag);
+            path.StrokeThickness = thickness;
             path.Data = pathGeometry;
             canvas.Children.Add(path);
             return path;
         }
 
-        private Path CreateSegment(Point start, Point end, Color color)
+        private Path CreateSegment(Point start, Point end, Color color, double thickness)
         {
             PathGeometry pathGeometry = new PathGeometry();
             PathFigure pathFigure = new PathFigure();
@@ -209,7 +251,7 @@ namespace IllustrationGenerator
             pathFigure.Segments.Add(line);
             pathGeometry.Figures.Add(pathFigure);
             Path path = new Path();
-            path.StrokeThickness = rng.RandomDouble(PaintParameters.PATH_STROKE_THICKNESS_MAX_RATIO * diag, PaintParameters.PATH_STROKE_THICKNESS_MIN_RATIO * diag);
+            path.StrokeThickness = thickness;
             path.Stroke = new SolidColorBrush(color);
             path.Data = pathGeometry;
             canvas.Children.Add(path);

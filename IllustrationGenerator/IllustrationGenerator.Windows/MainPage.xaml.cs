@@ -48,11 +48,11 @@ namespace IllustrationGenerator
             }
         }
 
-        public int PathCount
+        public int AntCount
         {
             get
             {
-                return map.PathCount;
+                return ants.Count;
             }
         }
 
@@ -68,35 +68,41 @@ namespace IllustrationGenerator
             antTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
             nestTimer = new DispatcherTimer();
             nestTimer.Tick += nestTimer_Tick;
-            nestTimer.Interval = new TimeSpan(0, 0, 0, 5);
+            nestTimer.Interval = new TimeSpan(0, 0, 0, 0 ,500);
             ants = new List<Ant>();
-            foreach (var city in map.Cities)
-            {
-                ants.Add(new Ant(city, map));
-            }
+            SentAnts();
         }
 
         void mapTimer_Tick(object sender, object e)
         {
             map.RefreshPheromones();
             RaisePropertyChanged("PheromoneCount");
-            RaisePropertyChanged("PathCount");
+            RaisePropertyChanged("AntCount");
         }
 
         void nestTimer_Tick(object sender, object e)
         {
+            SentAnts();
+            RaisePropertyChanged("PheromoneCount");
+            RaisePropertyChanged("AntCount");
+        }
+
+        void SentAnts()
+        {
             foreach (var city in map.Cities)
             {
-                ants.Add(new Ant(city, map));
+                ants.Add(new JustantAnt(city, map));
             }
-            RaisePropertyChanged("PheromoneCount");
-            RaisePropertyChanged("PathCount");
         }
 
         void antTimer_Tick(object sender, object e)
         {
+            // Kill all ants without pheromone
+            ants.RemoveAll(a => !a.CheckPheromone());
+            // Move each ant
             foreach (var ant in ants)
-                ant.RandomMove();
+                ant.Move();
+            // Update
             RaisePropertyChanged("PheromoneCount");
             RaisePropertyChanged("PathCount");
         }

@@ -21,6 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Painter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PaintParameters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pheromone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JustantAnt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RandomAnt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RandomGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulationParameters.cs" />
   </ItemGroup>

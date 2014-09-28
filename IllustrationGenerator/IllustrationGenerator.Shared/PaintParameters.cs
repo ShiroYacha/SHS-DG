@@ -12,6 +12,7 @@ namespace IllustrationGenerator
         public static double ELLIPSE_STROKE_THICKNESS_RATIO = 0.005;
         public static double PATH_STROKE_THICKNESS_MAX_RATIO = 0.005;
         public static double PATH_STROKE_THICKNESS_MIN_RATIO = 0.001;
-
+        public static double PATH_STROKE_THICKNESS_FOOD_MAX_RATIO = 0.01;
+        public static double PATH_STROKE_THICKNESS_FOOD_MIN_RATIO = 0.008;
     }
 }

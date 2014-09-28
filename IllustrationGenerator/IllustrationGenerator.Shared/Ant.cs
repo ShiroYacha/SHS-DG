@@ -6,19 +6,19 @@ using Windows.UI;
 
 namespace IllustrationGenerator
 {
-    public class Ant
+    public abstract class Ant
     {
-        private Color FOOD_PHEROMONE_COLOR = Colors.White;
+        protected Color FOOD_PHEROMONE_COLOR = Colors.White;
 
-        private City city;
-        private Point position;
-        private Map map;
+        protected City city;
+        protected Point position;
+        protected Map map;
 
-        private int pheromoneSupply;
+        protected int pheromoneSupply;
 
-        private double antStep;
+        protected double antStep;
 
-        private RandomGenerator rng = new RandomGenerator();
+        protected RandomGenerator rng = new RandomGenerator();
     
         public Point Position
         {
@@ -37,26 +37,11 @@ namespace IllustrationGenerator
             this.pheromoneSupply = SimulationParameters.ANT_PHEROMONE_SUPPLY;
         }
 
-        public void RandomMove()
-        {
-            var oldPosition = position;
-            // Compute move
-            var deltaX = rng.RandomDouble(antStep, -antStep);
-            var deltaY = rng.RandomDouble(antStep, -antStep);
-            if (position.X + deltaX >= 0 && position.X + deltaX < map.Width)
-                position.X += deltaX;
-            if (position.Y + deltaY >= 0 && position.Y + deltaY < map.Height)
-                position.Y += deltaY;
-            // Paint pheromone on map
-            if (pheromoneSupply > 0)
-            {
-                var newPheromone =new Pheromone(city.Color);
-                map.DropPheromoneOnMap(newPheromone, position);
-                map.ConnectPheromoneOnMap(newPheromone, oldPosition, position);
-                pheromoneSupply--;
-            }
-        }
+        public abstract void Move();
 
-        
+        public bool CheckPheromone()
+        {
+            return pheromoneSupply > 0;
+        }
     }
 }

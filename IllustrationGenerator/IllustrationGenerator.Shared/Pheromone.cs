@@ -7,6 +7,15 @@ namespace IllustrationGenerator
 {
     public class Pheromone
     {
+        bool isFood;
+        public bool IsFood
+        {
+            get
+            {
+                return isFood;
+            }
+        }
+
         public Color Color
         {
             get
@@ -27,8 +36,9 @@ namespace IllustrationGenerator
         private Color initialColor;
         private double initialAmount;
 
-        public Pheromone(Color initialColor)
+        public Pheromone(Color initialColor, bool isFood)
         {
+            this.isFood = isFood;
             this.initialColor = initialColor;
             this.initialAmount = SimulationParameters.ANT_INIT_PHEROMONE_AMOUT;
         }
